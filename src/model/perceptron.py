@@ -1,84 +1,67 @@
-import numpy as np
-
-
-def unit_step_func(x):
-    return np.where(x > 0 , 1, 0)
+# It takes multiple binary inputs, applies weights to them, sums them up, 
+# and then passes the sum through an activation function, 
+# typically a step function, to produce a binary output.
+#
+# Perceptrons are typically used for binary classification tasks and can only learn linear decision boundaries.
 
 class Perceptron:
+    """
+    A simple perceptron classifier.
+
+    Attributes:
+        learning_rate (float): The learning rate for training.
+        n_iters (int): The number of iterations for training.
+        neuron (Neuron): The neuron instance used for classification.
+    """
 
     def __init__(self, learning_rate=0.01, n_iters=1000):
-        self.lr = learning_rate
-        self.n_iters = n_iters
-        self.activation_func = unit_step_func
-        self.weights = None
-        self.bias = None
+        """
+        Initialize the perceptron.
 
+        Args:
+            learning_rate (float, optional): The learning rate for training. Defaults to 0.01.
+            n_iters (int, optional): The number of iterations for training. Defaults to 1000.
+        """
+        self.neuron = Neuron(activation="step")
+        self.learning_rate = learning_rate
+        self.n_iters = n_iters
 
     def fit(self, X, y):
-        n_samples, n_features = X.shape
+        """
+        Fit the perceptron to the training data.
 
-        # init parameters
-        self.weights = np.zeros(n_features)
-        self.bias = 0
-
-        y_ = np.where(y > 0 , 1, 0)
-
-        # learn weights
-        for _ in range(self.n_iters):
-            for idx, x_i in enumerate(X):
-                linear_output = np.dot(x_i, self.weights) + self.bias
-                y_predicted = self.activation_func(linear_output)
-
-                # Perceptron update rule
-                update = self.lr * (y_[idx] - y_predicted)
-                self.weights += update * x_i
-                self.bias += update
-
+        Args:
+            X (numpy.ndarray): The input features.
+            y (numpy.ndarray): The target labels.
+        """
+        self.neuron.fit(X, y, self.learning_rate, self.n_iters)
 
     def predict(self, X):
-        linear_output = np.dot(X, self.weights) + self.bias
-        y_predicted = self.activation_func(linear_output)
-        return y_predicted
+        """
+        Predict the labels for input data.
 
+        Args:
+            X (numpy.ndarray): The input features.
 
-# Testing
-if __name__ == "__main__":
-    # Imports
-    import matplotlib.pyplot as plt
-    from sklearn.model_selection import train_test_split
-    from sklearn import datasets
+        Returns:
+            numpy.ndarray: Predicted labels.
+        """
+        return self.neuron.predict(X)
+    
+    def get_weights(self):
+        """
+        Get the weights of the perceptron.
 
-    def accuracy(y_true, y_pred):
-        accuracy = np.sum(y_true == y_pred) / len(y_true)
-        return accuracy
+        Returns:
+            numpy.ndarray: Weights of the perceptron.
+        """
+        return self.neuron.weights
 
-    X, y = datasets.make_blobs(
-        n_samples=150, n_features=2, centers=2, cluster_std=1.05, random_state=2
-    )
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=123
-    )
+    def get_bias(self):
+        """
+        Get the bias of the perceptron.
 
-    p = Perceptron(learning_rate=0.01, n_iters=1000)
-    p.fit(X_train, y_train)
-    predictions = p.predict(X_test)
-
-    print("Perceptron classification accuracy", accuracy(y_test, predictions))
-
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    plt.scatter(X_train[:, 0], X_train[:, 1], marker="o", c=y_train)
-
-    x0_1 = np.amin(X_train[:, 0])
-    x0_2 = np.amax(X_train[:, 0])
-
-    x1_1 = (-p.weights[0] * x0_1 - p.bias) / p.weights[1]
-    x1_2 = (-p.weights[0] * x0_2 - p.bias) / p.weights[1]
-
-    ax.plot([x0_1, x0_2], [x1_1, x1_2], "k")
-
-    ymin = np.amin(X_train[:, 1])
-    ymax = np.amax(X_train[:, 1])
-    ax.set_ylim([ymin - 3, ymax + 3])
-
-    plt.show()
+        Returns:
+            float: Bias of the perceptron.
+        """
+        return self.neuron.bias
