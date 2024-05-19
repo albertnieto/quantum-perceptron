@@ -1,3 +1,5 @@
+import numpy as np
+
 class KernelPerceptron(object):
 
     def __init__(self, kernel, n_iter=1):
