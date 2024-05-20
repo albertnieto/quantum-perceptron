@@ -1,9 +1,13 @@
-class MLP:
-    def __init__(self, input_neurons=1, output_neurons=1, inner_layers=[0], learning_rate=0.01, n_iters=1000):
+class MLP(object):
+    def __init__(self, input_neurons=1, output_neurons=1, inner_layers=[1, 1], learning_rate=0.01, n_iters=1000, neuron_type='classic'):
+
         self.input_neurons = input_neurons
         self.output_neurons = output_neurons
         self.inner_layers = inner_layers
+        self.neuron_type = neuron_type
+
         self.neurons = self.create_network()
+
         self.learning_rate = learning_rate
         self.n_iters = n_iters
 
