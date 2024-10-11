@@ -1,0 +1,6 @@
+pennylane
+pennylane-qiskit
+numpy
+scikit-learn
+matplotlib
+pytest
